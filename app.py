@@ -43,7 +43,9 @@ def main():
     
     elif page == "Cases":
         st.title("Covid Cases in UK Areas")
-        chosen_area = st.selectbox("Choose an area to view", list(df_area_fil['Area name'].unique()), index=0)
+        area_list = list(df_area_fil['Area name'].unique())
+        area_list.sort()
+        chosen_area = st.selectbox("Choose an area to view", area_list, index=0)
         chosen_metric = st.selectbox("Daily or cumulative cases", ['Daily', 'Cumulative'], index=0)
         visualize_data(df_area_fil, chosen_area, chosen_metric)
     

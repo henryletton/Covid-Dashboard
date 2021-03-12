@@ -1,24 +1,56 @@
+'''
+    File name: app.py
+    Author: Henry Letton
+    Date created: 2020-11-29
+    Python Version: 3.8.3
+    Desciption: Streamlit app to show uk covid cases
+'''
+
 import pandas as pd
 import streamlit as st
 import plotly.express as px
 
+# Webpage def
 def main():
-    df = load_data()
-    page = st.sidebar.selectbox("Choose a page", ["Homepage", "Cases"])
 
+    # Get main data
+    df = load_data().sort_values('Specimen date')
+    
+    # User input
+    page = st.sidebar.selectbox("Choose a page", ["Homepage", "Cases", "Data"])
+    area = st.sidebar.selectbox("Choose area type", ["All", "Nation", "Region", "Upper-Tier Local Authority", "Lower-Tier Local Authority"], index=3)
+    
+    # Filter according to user input
+    if area == 'Nation':
+        area_in_df = 'nation'
+    elif area == 'Region':
+        area_in_df = 'region'
+    elif area == 'Upper-Tier Local Authority':
+        area_in_df = 'utla'
+    elif area == 'ltla':
+        area_in_df = ''
+    
+    if area == 'All':
+        df_area_fil = df.copy()
+    else:
+        df_area_fil = df[df['Area type'] == area_in_df].copy()
+
+    # Define different pages
     if page == "Homepage":
         st.header("About")
         st.write("This a dashboard to display data on covid.")
         st.write("Please select a page on the left.")
-        #st.write(df)
+    
     elif page == "Cases":
         st.title("Covid Cases in UK Areas")
-        chosen_area = st.selectbox("Choose an area to view", list(df['Area name'].unique()), index=0)
+        chosen_area = st.selectbox("Choose an area to view", list(df_area_fil['Area name'].unique()), index=0)
         chosen_metric = st.selectbox("Daily or cumulative cases", ['Daily', 'Cumulative'], index=0)
-        #y_axis = st.selectbox("Choose a var for the y-axis", df.columns, index=4)
-        visualize_data(df, chosen_area, chosen_metric)
+        visualize_data(df_area_fil, chosen_area, chosen_metric)
+    
+    elif page == "Data":
+        st.dataframe(df)
 
-
+# Cache data, to save on running time
 @st.cache
 def load_data():
     url = "https://coronavirus.data.gov.uk/downloads/csv/coronavirus-cases_latest.csv"
@@ -26,7 +58,8 @@ def load_data():
     #df = df_all[df_all['Area name'] == 'Elmbridge']
     return df
 
-def visualize_data(df, chosen_area, chosen_metric):
+# Function to plat chart based on user selection
+def visualize_data(df, chosen_area, chosen_metric, chosen_period="Specimen date"):
     
     df_filter = df[df['Area name'] == chosen_area]
     
@@ -36,9 +69,9 @@ def visualize_data(df, chosen_area, chosen_metric):
         chosen_metric2 = 'Cumulative lab-confirmed cases'
     
     
-    graph = px.line(df_filter, x="Specimen date", 
+    graph = px.line(df_filter, x=chosen_period, 
               y=chosen_metric2, 
-              title='Covid in Elmbridge')
+              title=f'Covid in {chosen_area}')
 
     st.write(graph)
 

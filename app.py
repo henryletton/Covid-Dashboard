@@ -27,8 +27,8 @@ def main():
         area_in_df = 'region'
     elif area == 'Upper-Tier Local Authority':
         area_in_df = 'utla'
-    elif area == 'ltla':
-        area_in_df = ''
+    elif area == 'Lower-Tier Local Authority':
+        area_in_df = 'ltla'
     
     if area == 'All':
         df_area_fil = df.copy()

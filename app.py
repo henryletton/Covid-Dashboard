@@ -18,7 +18,7 @@ def main():
     
     # User input
     page = st.sidebar.selectbox("Choose a page", ["Homepage", "Cases", "Data"])
-    area = st.sidebar.selectbox("Choose area type", ["All", "Nation", "Region", "Upper-Tier Local Authority", "Lower-Tier Local Authority"], index=3)
+    area = st.sidebar.selectbox("Choose area type", ["All", "Lower-Tier Local Authority"], index=1)
     
     # Filter according to user input
     if area == 'Nation':
